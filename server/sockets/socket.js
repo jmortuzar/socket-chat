@@ -9,8 +9,6 @@ const usuarios = new Usuarios();
 
 io.on('connection', (client) => {
 
-    console.log('Usuario conectado');
-
     client.on('entrarChat', (usuario, callback) => {
         if(!usuario.nombre || !usuario.sala) {
             return callback({
@@ -25,16 +23,17 @@ io.on('connection', (client) => {
 
         usuarios.agregarPersona(client.id, usuario.nombre, usuario.sala);
 
-
+        client.broadcast.to(usuario.sala).emit('crearMensaje', crearMensaje('Administrador', `${usuario.nombre} entró al chat`));
         client.broadcast.to(usuario.sala).emit('listaPersona', usuarios.getPersonasPorSala(usuario.sala));
 
         return callback(usuarios.getPersonasPorSala(usuario.sala));
     });
 
-    client.on('crearMensaje', data => {
+    client.on('crearMensaje', (data, callback) => {
         const persona = usuarios.getPersona(client.id);
         const mensaje = crearMensaje(persona.nombre, data.mensaje);
         client.broadcast.to(persona.sala).emit('crearMensaje', mensaje);
+        callback(mensaje);
     });
 
 

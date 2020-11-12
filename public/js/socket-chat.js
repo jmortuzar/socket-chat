@@ -1,6 +1,6 @@
 var socket = io();
 
-const params = new URLSearchParams(window.location.search);
+// const params = new URLSearchParams(window.location.search);
 
 if(!params.has('nombre') || !params.has('sala')) {
     window.location = 'index.html';
@@ -18,6 +18,7 @@ socket.on('connect', function() {
 
     socket.emit('entrarChat', usuario, function (resp) {
         console.log('Usuarios conectados: ', resp);
+        renderizarUsuarios(resp);
 
     });
 
@@ -42,13 +43,13 @@ socket.on('disconnect', function() {
 // Escuchar información
 socket.on('crearMensaje', function(mensaje) {
 
-    console.log('Servidor:', mensaje);
+    renderizarMensajes(mensaje);
 
 });
 
 socket.on('listaPersona', function(personas) {
 
-    console.log(personas);
+    renderizarUsuarios(personas);
 
 });
 
